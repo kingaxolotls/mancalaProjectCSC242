@@ -116,24 +116,21 @@ def should_swap(p1_pits, p2_pits):
     return sum(p1_pits) > sum(p2_pits)
 
 def main():
-    """Main function to handle input and output in a loop."""
-    while True:
-        input_str = sys.stdin.readline().strip()
-        if not input_str:
-            break  # Exit if input is empty (e.g., end of file)
-        
-        N, p1_pits, p2_pits, p1_store, p2_store, turn, player = parse_input(input_str)
-        state = (p1_pits, p2_pits, p1_store, p2_store, turn)
-        
-        # Handle "PIE" rule for the second player on the first turn
-        if turn == 1 and player == 2:
-            if should_swap(p1_pits, p2_pits):
-                print("PIE")
-                continue  # Skip to the next input
-        
-        # Find and output the best move
-        best_move = find_best_move(state, player)
-        print(best_move + 1)  # Pits are 1-indexed in output
+    """Main function to handle input and output."""
+    input_str = sys.stdin.readline().strip()
+    N, p1_pits, p2_pits, p1_store, p2_store, turn, player = parse_input(input_str)
+    
+    state = (p1_pits, p2_pits, p1_store, p2_store, turn)
+    
+    # Handle "PIE" rule for the second player on the first turn
+    if turn == 1 and player == 2:
+        if should_swap(p1_pits, p2_pits):
+            print("PIE")
+            return
+    
+    # Find and output the best move
+    best_move = find_best_move(state, player)
+    print(best_move + 1)  # Pits are 1-indexed in output
 
 if __name__ == "__main__":
     main()
