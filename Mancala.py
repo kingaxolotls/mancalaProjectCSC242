@@ -122,6 +122,9 @@ def main():
     
     state = (p1_pits, p2_pits, p1_store, p2_store, turn)
     
+    # Print the game state being sent to the player
+    print(f"Sending STATE {N} {' '.join(map(str, p1_pits))} {' '.join(map(str, p2_pits))} {p1_store} {p2_store} {turn} {player} to player {player}")
+    
     # Handle "PIE" rule for the second player on the first turn
     if turn == 1 and player == 2:
         if should_swap(p1_pits, p2_pits):
@@ -130,7 +133,7 @@ def main():
     
     # Find and output the best move
     best_move = find_best_move(state, player)
-    print(best_move + 1)  # Pits are 1-indexed in output
+    print(f"Turn {turn}, Player {player} move: {best_move + 1}")  # Pits are 1-indexed in output
 
 if __name__ == "__main__":
     main()
