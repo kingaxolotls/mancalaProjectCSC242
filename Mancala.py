@@ -61,7 +61,7 @@ def minimax(state, depth, alpha, beta, maximizing_player, player):
             # Checking if move grants extra turn
             extra_turn = check_extra_turn(new_p1_pits, pit_index)
             new_p1_pits, new_p1_store = make_move(new_p1_pits, new_p1_store, pit_index)
-            eval = minimax((new_p1_pits, new_p2_pits, new_p1_store, new_p2_store, 2), depth - 1, alpha, beta, False, player)
+            eval = (extra_turn * 5) + minimax((new_p1_pits, new_p2_pits, new_p1_store, new_p2_store, 2), depth - 1, alpha, beta, False, player)
             max_eval = max(max_eval, eval)
             alpha = max(alpha, eval)
             if beta <= alpha:
@@ -76,8 +76,10 @@ def minimax(state, depth, alpha, beta, maximizing_player, player):
             new_p2_pits = p2_pits.copy()
             new_p1_store = p1_store
             new_p2_store = p2_store
+            # Checking if move grants extra turn
+            extra_turn = check_extra_turn(new_p2_pits, pit_index)
             new_p2_pits, new_p2_store = make_move(new_p2_pits, new_p2_store, pit_index)
-            eval = minimax((new_p1_pits, new_p2_pits, new_p1_store, new_p2_store, 1), depth - 1, alpha, beta, True, player)
+            eval = (extra_turn * 5) + minimax((new_p1_pits, new_p2_pits, new_p1_store, new_p2_store, 1), depth - 1, alpha, beta, True, player)
             min_eval = min(min_eval, eval)
             beta = min(beta, eval)
             if beta <= alpha:
