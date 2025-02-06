@@ -31,11 +31,9 @@ def evaluate_state(p1_pits, p2_pits, p1_store, p2_store, player):
     score = p1_store - p2_store if player == 1 else p2_store - p1_store
     
     if player == 1:
-        score = defense_calculation(p1_pits, p2_pits, score)
+        return defense_calculation(p1_pits, p2_pits, score)
     else:
-        score = defense_calculation(p1_pits, p2_pits, score)
-    
-    return score
+        return defense_calculation(p2_pits, p1_pits, score)
 def defense_calculation(current_pits, enemy_pits, score):
     for i in range(len(enemy_pits)):
         if enemy_pits[i] == 0 and current_pits[len(current_pits) - 1 - i] > 0:
