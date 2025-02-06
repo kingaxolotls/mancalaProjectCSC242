@@ -35,7 +35,9 @@ def evaluate_state(p1_pits, p2_pits, p1_store, p2_store, player):
         return p1_store - p2_store
     else:
         return p2_store - p1_store
-
+def check_extra_turn(pits, pit_index):
+    """Check whether playing the current pit ends in the player's store"""
+    return len(pits) - pit_index == pits[pit_index]
 def minimax(state, depth, alpha, beta, maximizing_player, player):
     """Minimax algorithm with alpha-beta pruning."""
     p1_pits, p2_pits, p1_store, p2_store, turn = state
@@ -52,6 +54,8 @@ def minimax(state, depth, alpha, beta, maximizing_player, player):
             new_p2_pits = p2_pits.copy()
             new_p1_store = p1_store
             new_p2_store = p2_store
+            # Checking if move grants extra turn
+            extra_turn = check_extra_turn(new_p1_pits, pit_index)
             new_p1_pits, new_p1_store = make_move(new_p1_pits, new_p1_store, pit_index)
             eval = minimax((new_p1_pits, new_p2_pits, new_p1_store, new_p2_store, 2), depth - 1, alpha, beta, False, player)
             max_eval = max(max_eval, eval)
@@ -91,7 +95,7 @@ def find_best_move(state, player):
             new_p1_store = p1_store
             new_p2_store = p2_store
             new_p1_pits, new_p1_store = make_move(new_p1_pits, new_p1_store, pit_index)
-            eval = minimax((new_p1_pits, new_p2_pits, new_p1_store, new_p2_store, 2), depth=8, alpha=-math.inf, beta=math.inf, maximizing_player=False, player=player)
+            eval = minimax((new_p1_pits, new_p2_pits, new_p1_store, new_p2_store, 2), depth=3, alpha=-math.inf, beta=math.inf, maximizing_player=False, player=player)
             if eval > best_value:
                 best_value = eval
                 best_move = pit_index
@@ -104,16 +108,16 @@ def find_best_move(state, player):
             new_p1_store = p1_store
             new_p2_store = p2_store
             new_p2_pits, new_p2_store = make_move(new_p2_pits, new_p2_store, pit_index)
-            eval = minimax((new_p1_pits, new_p2_pits, new_p1_store, new_p2_store, 1), depth=8, alpha=-math.inf, beta=math.inf, maximizing_player=True, player=player)
+            eval = minimax((new_p1_pits, new_p2_pits, new_p1_store, new_p2_store, 1), depth=3, alpha=-math.inf, beta=math.inf, maximizing_player=True, player=player)
             if eval < best_value:
                 best_value = eval
                 best_move = pit_index
     return best_move
 
-def should_swap(p1_pits, p2_pits, turn, player, p1_store, p2_store):
-    if turn == 2 and player == 2 and p1_store > p2_store:
-        return True
-    return False
+def should_swap(p1_pits, p2_pits):
+    """Determine if the second player should swap the board."""
+    # Example heuristic: Swap if the opponent has more stones in their pits.
+    return sum(p1_pits) > sum(p2_pits)
 
 def main():
     """Main function to handle input and output."""
@@ -122,16 +126,18 @@ def main():
     
     state = (p1_pits, p2_pits, p1_store, p2_store, turn)
     
-    # Handle "PIE" rule for the second player on the second turn
-    if turn == 2 and player == 2:
-        p1_store > p2_store
-        if should_swap(p1_pits, p2_pits, turn, player, p1_store, p2_store):
+    # Print the game state being sent to the player
+    print(f"Sending STATE {N} {' '.join(map(str, p1_pits))} {' '.join(map(str, p2_pits))} {p1_store} {p2_store} {turn} {player} to player {player}")
+    
+    # Handle "PIE" rule for the second player on the first turn
+    if turn == 1 and player == 2:
+        if should_swap(p1_pits, p2_pits):
             print("PIE")
             return
     
     # Find and output the best move
     best_move = find_best_move(state, player)
-    print(best_move + 1)  # Pits are 1-indexed in output
+    print(f"Turn {turn}, Player {player} move: {best_move + 1}")  # Pits are 1-indexed in output
 
 if __name__ == "__main__":
     main()
