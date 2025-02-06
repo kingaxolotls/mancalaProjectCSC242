@@ -2,7 +2,6 @@ import sys
 import math
 
 def parse_input(input_str):
-    """Parse the input string into game state variables."""
     parts = input_str.split()
     N = int(parts[1])
     p1_pits = list(map(int, parts[2:2+N]))
@@ -15,7 +14,6 @@ def parse_input(input_str):
     return N, p1_pits, p2_pits, p1_store, p2_store, turn, player
 
 def make_move(pits, store, pit_index):
-    """Simulate a move in Mancala."""
     stones = pits[pit_index]
     pits[pit_index] = 0
     current_pit = pit_index + 1
@@ -24,22 +22,28 @@ def make_move(pits, store, pit_index):
             pits[current_pit] += 1
         else:
             store += 1
-            current_pit = -1  # Reset to start of pits
+            current_pit = -1
         stones -= 1
         current_pit += 1
-    return pits, store
+    return pits, store    
 
 def evaluate_state(p1_pits, p2_pits, p1_store, p2_store, player):
-    """Evaluate the game state for the given player."""
+    score = p1_store - p2_store if player == 1 else p2_store - p1_store
+    
     if player == 1:
-        return p1_store - p2_store
+        for i in range(len(p2_pits)):
+            if p2_pits[i] == 0 and p1_pits[len(p1_pits) - 1 - i] > 0:
+                score -= p1_pits[len(p1_pits) - 1 - i]
     else:
-        return p2_store - p1_store
+        for i in range(len(p1_pits)):
+            if p1_pits[i] == 0 and p2_pits[len(p2_pits) - 1 - i] > 0:
+                score -= p2_pits[len(p2_pits) - 1 - i]
+    
+    return score
 def check_extra_turn(pits, pit_index):
     """Check whether playing the current pit ends in the player's store"""
     return len(pits) - pit_index == pits[pit_index]
 def minimax(state, depth, alpha, beta, maximizing_player, player):
-    """Minimax algorithm with alpha-beta pruning."""
     p1_pits, p2_pits, p1_store, p2_store, turn = state
     
     if depth == 0 or sum(p1_pits) == 0 or sum(p2_pits) == 0:
@@ -81,7 +85,6 @@ def minimax(state, depth, alpha, beta, maximizing_player, player):
         return min_eval
 
 def find_best_move(state, player):
-    """Find the best move using the Minimax algorithm."""
     p1_pits, p2_pits, p1_store, p2_store, turn = state
     best_move = None
     best_value = -math.inf if player == 1 else math.inf
@@ -95,7 +98,7 @@ def find_best_move(state, player):
             new_p1_store = p1_store
             new_p2_store = p2_store
             new_p1_pits, new_p1_store = make_move(new_p1_pits, new_p1_store, pit_index)
-            eval = minimax((new_p1_pits, new_p2_pits, new_p1_store, new_p2_store, 2), depth=3, alpha=-math.inf, beta=math.inf, maximizing_player=False, player=player)
+            eval = minimax((new_p1_pits, new_p2_pits, new_p1_store, new_p2_store, 2), depth=8, alpha=-math.inf, beta=math.inf, maximizing_player=False, player=player)
             if eval > best_value:
                 best_value = eval
                 best_move = pit_index
@@ -108,36 +111,31 @@ def find_best_move(state, player):
             new_p1_store = p1_store
             new_p2_store = p2_store
             new_p2_pits, new_p2_store = make_move(new_p2_pits, new_p2_store, pit_index)
-            eval = minimax((new_p1_pits, new_p2_pits, new_p1_store, new_p2_store, 1), depth=3, alpha=-math.inf, beta=math.inf, maximizing_player=True, player=player)
+            eval = minimax((new_p1_pits, new_p2_pits, new_p1_store, new_p2_store, 1), depth=8, alpha=-math.inf, beta=math.inf, maximizing_player=True, player=player)
             if eval < best_value:
                 best_value = eval
                 best_move = pit_index
     return best_move
 
-def should_swap(p1_pits, p2_pits):
-    """Determine if the second player should swap the board."""
-    # Example heuristic: Swap if the opponent has more stones in their pits.
-    return sum(p1_pits) > sum(p2_pits)
+def should_swap(p1_pits, p2_pits, turn, player, p1_store, p2_store):
+    if turn == 2 and player == 2 and p1_store > p2_store:
+        return True
+    return False
 
 def main():
-    """Main function to handle input and output."""
     input_str = sys.stdin.readline().strip()
     N, p1_pits, p2_pits, p1_store, p2_store, turn, player = parse_input(input_str)
     
     state = (p1_pits, p2_pits, p1_store, p2_store, turn)
     
-    # Print the game state being sent to the player
-    print(f"Sending STATE {N} {' '.join(map(str, p1_pits))} {' '.join(map(str, p2_pits))} {p1_store} {p2_store} {turn} {player} to player {player}")
-    
-    # Handle "PIE" rule for the second player on the first turn
-    if turn == 1 and player == 2:
-        if should_swap(p1_pits, p2_pits):
+    if turn == 2 and player == 2:
+        p1_store > p2_store
+        if should_swap(p1_pits, p2_pits, turn, player, p1_store, p2_store):
             print("PIE")
             return
     
-    # Find and output the best move
     best_move = find_best_move(state, player)
-    print(f"Turn {turn}, Player {player} move: {best_move + 1}")  # Pits are 1-indexed in output
+    print(best_move + 1)
 
 if __name__ == "__main__":
     main()
