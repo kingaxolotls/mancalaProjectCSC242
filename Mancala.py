@@ -31,15 +31,15 @@ def evaluate_state(p1_pits, p2_pits, p1_store, p2_store, player):
     score = p1_store - p2_store if player == 1 else p2_store - p1_store
     
     if player == 1:
-        for i in range(len(p2_pits)):
-            if p2_pits[i] == 0 and p1_pits[len(p1_pits) - 1 - i] > 0:
-                score -= p1_pits[len(p1_pits) - 1 - i]
+        score = defense_calculation(p1_pits, p2_pits, score)
     else:
-        for i in range(len(p1_pits)):
-            if p1_pits[i] == 0 and p2_pits[len(p2_pits) - 1 - i] > 0:
-                score -= p2_pits[len(p2_pits) - 1 - i]
+        score = defense_calculation(p1_pits, p2_pits, score)
     
     return score
+def defense_calculation(current_pits, enemy_pits, score):
+    for i in range(len(enemy_pits)):
+        if enemy_pits[i] == 0 and current_pits[len(current_pits) - 1 - i] > 0:
+            score -= current_pits[len(current_pits) - 1 - i]
 def check_extra_turn(pits, pit_index):
     """Check whether playing the current pit ends in the player's store"""
     return len(pits) - pit_index == pits[pit_index]

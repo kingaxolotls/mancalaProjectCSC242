@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ceec2e35-d11e-48e1-afc6-0ec2cdb35770" name="Changes" comment="Adds check_extra_turn function and a  call to it within the minimax.">
+    <list default="true" id="ceec2e35-d11e-48e1-afc6-0ec2cdb35770" name="Changes" comment="Adds check_extra_turn calls within the minimax function.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mancala.py" beforeDir="false" afterPath="$PROJECT_DIR$/Mancala.py" afterDir="false" />
     </list>
@@ -70,7 +70,15 @@
       <option name="project" value="LOCAL" />
       <updated>1738806132260</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Adds check_extra_turn calls within the minimax function.">
+      <option name="closed" value="true" />
+      <created>1738806903494</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1738806903494</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -86,6 +94,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Adds check_extra_turn function and a  call to it within the minimax." />
-    <option name="LAST_COMMIT_MESSAGE" value="Adds check_extra_turn function and a  call to it within the minimax." />
+    <MESSAGE value="Adds check_extra_turn calls within the minimax function." />
+    <option name="LAST_COMMIT_MESSAGE" value="Adds check_extra_turn calls within the minimax function." />
   </component>
 </project>
