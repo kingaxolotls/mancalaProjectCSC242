@@ -40,7 +40,9 @@ def evaluate_state(p1_pits, p2_pits, p1_store, p2_store, player):
                 score -= p2_pits[len(p2_pits) - 1 - i]
     
     return score
-
+def check_extra_turn(pits, pit_index):
+    """Check whether playing the current pit ends in the player's store"""
+    return len(pits) - pit_index == pits[pit_index]
 def minimax(state, depth, alpha, beta, maximizing_player, player):
     p1_pits, p2_pits, p1_store, p2_store, turn = state
     
@@ -56,6 +58,8 @@ def minimax(state, depth, alpha, beta, maximizing_player, player):
             new_p2_pits = p2_pits.copy()
             new_p1_store = p1_store
             new_p2_store = p2_store
+            # Checking if move grants extra turn
+            extra_turn = check_extra_turn(new_p1_pits, pit_index)
             new_p1_pits, new_p1_store = make_move(new_p1_pits, new_p1_store, pit_index)
             eval = minimax((new_p1_pits, new_p2_pits, new_p1_store, new_p2_store, 2), depth - 1, alpha, beta, False, player)
             max_eval = max(max_eval, eval)
