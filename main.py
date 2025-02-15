@@ -2,6 +2,11 @@ import sys
 import math
 import random
 
+## Diego Rodriguez, Drodri41@u.rochester.edu
+## Matthew Repetsky, mrepetsk@u.rochester.edu
+## Em Villa, mvilla4@u.rochester.edu
+## Tristan Nygaard, tnygaard@u.rochester.edu
+
 
 def parse_input(input_str):
     parts = input_str.split()
