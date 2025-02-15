@@ -60,91 +60,31 @@ def check_extra_turn(pits, pit_index):
     final_pos = (pit_index + stones) % total_pits
     return final_pos == len(pits)
 
-def check_empty_pits(player_pits):
-    empty_pits = 0
-    for pit in player_pits:
-        if pit == 0:
-            empty_pits += 1
-    return empty_pits
-def evaluation_function(player_pits, opponent_pits, player_store, opponent_store, player):
-    game_phase = sum(player_pits) + sum(opponent_pits)
-    store_weight = 0
-    pit_stones_weight = 0
-    empty_pit_weight = 0
-    extra_turn_bonus = 0
-    capture_bonus = 0
 
+def evaluation_function(player_pits, opponent_pits, player_store, opponent_store, player):
     if player == 2:
         player_store_, opponent_store = opponent_store, player_store
         player_store = player_store_
         player_pits, opponent_pits = opponent_pits.copy(), player_pits.copy()
-        if game_phase >= 18:
-            store_weight = 10
-            pit_stones_weight = 2
-            empty_pit_weight = 3
-            extra_turn_bonus = 6
-            capture_bonus = 5
-        else:
-            if game_phase >= 12:
-                store_weight = 12
-                pit_stones_weight = 2
-                empty_pit_weight = 5
-                extra_turn_bonus = 5
-                capture_bonus = 6
-            else:
-                if game_phase >= 6:
-                    store_weight = 14
-                    pit_stones_weight = 2
-                    empty_pit_weight = 7
-                    extra_turn_bonus = 4
-                    capture_bonus = 8
-                else:
-                    store_weight = 15
-                    pit_stones_weight = 1
-                    empty_pit_weight = 9
-                    extra_turn_bonus = 3
-                    capture_bonus = 9
-    if player == 1:
-        if game_phase >= 18:
-            store_weight = 8*10
-            pit_stones_weight = 3
-            empty_pit_weight = 0
-            extra_turn_bonus = 9
-            capture_bonus = 4
-        else:
-            if game_phase >= 14:
-                store_weight = 10*10
-                pit_stones_weight = 2
-                empty_pit_weight = 2
-                extra_turn_bonus = 7
-                capture_bonus = 5*3
-            else:
-                if game_phase >= 6:
-                    store_weight = 11*10
-                    pit_stones_weight = 2
-                    empty_pit_weight = 7
-                    extra_turn_bonus = 5
-                    capture_bonus = 7*3
-                else:
-                    store_weight = 12*10
-                    pit_stones_weight = 1
-                    empty_pit_weight = 8*5
-                    extra_turn_bonus = 4
-                    capture_bonus = 8*3
 
+    store_weight = 50
+    pit_weight = 1
+    extra_turn_bonus = 5
+    capture_bonus = 5
     score = (player_store - opponent_store) * store_weight
-    score += sum(player_pits) - sum(opponent_pits) * (pit_stones_weight)
+    score += sum(player_pits) - sum(opponent_pits) * pit_weight
     for i in range(len(player_pits)):
         if player_pits[i] > 0 and check_extra_turn(player_pits, i):
             score += extra_turn_bonus
     for i in range(len(player_pits)):
         if player_pits[i] > 0 and opposite_capture(player_pits, opponent_pits, i, True):
             score += capture_bonus
-    score -= empty_pit_weight * check_empty_pits(player_pits)
+
     return score
 
 def minimax(node, depth, og_depth, isMaximizingPlayer, alpha, beta, player):
     p1_pits, p2_pits, p1_store, p2_store = node
+    # Determine which side is "player" and which is opponent.
     if (isMaximizingPlayer and player == 1) or (not isMaximizingPlayer and player == 2):
         player_pits = p1_pits.copy()
         opponent_pits = p2_pits.copy()
@@ -156,14 +96,16 @@ def minimax(node, depth, og_depth, isMaximizingPlayer, alpha, beta, player):
         player_store = p2_store
         opponent_store = p1_store
 
+    # Terminal condition: depth 0 or one side empty
     if depth == 0 or sum(p1_pits) == 0 or sum(p2_pits) == 0:
+        # Note: The evaluation function uses a player number of 1 or 2.
         return (evaluation_function(player_pits, opponent_pits, player_store, opponent_store,
                                    (1 if isMaximizingPlayer else 2)), 0)
 
     if isMaximizingPlayer:
         bestVal = -math.inf
         bestMove = -1
-
+        # Loop over the player's pits (depending on perspective)
         for pit_index in range(len(player_pits)):
             if player_pits[pit_index] == 0:
                 continue
@@ -193,7 +135,7 @@ def minimax(node, depth, og_depth, isMaximizingPlayer, alpha, beta, player):
     else:
         bestVal = math.inf
         bestMove = -1
-
+        # Loop over the opponent's pits
         for pit_index in range(len(opponent_pits)):
             if opponent_pits[pit_index] == 0:
                 continue
@@ -237,9 +179,12 @@ def main():
             print("PIE")
             return
 
-    best_value, best_move = minimax(startingNode, 8, 8, True, -math.inf, math.inf, player)
-
+    # Use the helper to choose the best move (pit index)
+    best_value, best_move = minimax(startingNode, 9, 9, True, -math.inf, math.inf, player)
+    # Adding 1 converts from 0-based indexing to the expected output
     print(best_move + 1)
+    print(make_move(p1_pits, p2_pits, p1_store, 2))
+
 
 if __name__ == "__main__":
     main()

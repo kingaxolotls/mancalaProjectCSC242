@@ -145,6 +145,7 @@ def evaluation_function(player_pits, opponent_pits, player_store, opponent_store
 
 def minimax(node, depth, og_depth, isMaximizingPlayer, alpha, beta, player):
     p1_pits, p2_pits, p1_store, p2_store = node
+    # Determine which side is "player" and which is opponent.
     if (isMaximizingPlayer and player == 1) or (not isMaximizingPlayer and player == 2):
         player_pits = p1_pits.copy()
         opponent_pits = p2_pits.copy()
@@ -156,14 +157,16 @@ def minimax(node, depth, og_depth, isMaximizingPlayer, alpha, beta, player):
         player_store = p2_store
         opponent_store = p1_store
 
+    # Terminal condition: depth 0 or one side empty
     if depth == 0 or sum(p1_pits) == 0 or sum(p2_pits) == 0:
+        # Note: The evaluation function uses a player number of 1 or 2.
         return (evaluation_function(player_pits, opponent_pits, player_store, opponent_store,
                                    (1 if isMaximizingPlayer else 2)), 0)
 
     if isMaximizingPlayer:
         bestVal = -math.inf
         bestMove = -1
-
+        # Loop over the player's pits (depending on perspective)
         for pit_index in range(len(player_pits)):
             if player_pits[pit_index] == 0:
                 continue
@@ -193,7 +196,7 @@ def minimax(node, depth, og_depth, isMaximizingPlayer, alpha, beta, player):
     else:
         bestVal = math.inf
         bestMove = -1
-
+        # Loop over the opponent's pits
         for pit_index in range(len(opponent_pits)):
             if opponent_pits[pit_index] == 0:
                 continue
@@ -237,9 +240,12 @@ def main():
             print("PIE")
             return
 
+    # Use the helper to choose the best move (pit index)
     best_value, best_move = minimax(startingNode, 8, 8, True, -math.inf, math.inf, player)
-
+    # Adding 1 converts from 0-based indexing to the expected output
     print(best_move + 1)
+    # print(make_move(p1_pits, p2_pits, p1_store, 2))
+
 
 if __name__ == "__main__":
     main()
